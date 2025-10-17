@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
-import { YTDlpWrapExtended } from "yt-dlp-wrap-extended";
+import pkg from "yt-dlp-wrap-extended";
+
+const { YTDlpWrapExtended } = pkg;
 
 const app = express();
 app.use(cors());
