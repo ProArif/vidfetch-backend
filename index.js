@@ -10,13 +10,14 @@ app.post("/api/getvideo", (req, res) => {
   const videoUrl = req.body.url;
   if (!videoUrl) return res.status(400).json({ error: "No URL provided" });
 
-  exec(`yt-dlp -f best -g ${videoUrl}`, (error, stdout, stderr) => {
-    if (error) {
-      console.error(stderr);
-      return res.status(500).json({ error: "Failed to get video link" });
-    }
-    res.json({ downloadUrl: stdout.trim() });
-  });
+  exec(`python3 -m yt_dlp -f best -g ${videoUrl}`, (error, stdout, stderr) => {
+  if (error) {
+    console.error(stderr);
+    return res.status(500).json({ error: "Failed to get video link" });
+  }
+  res.json({ downloadUrl: stdout.trim() });
+});
+
 });
 
 // Optional: root route to test server
