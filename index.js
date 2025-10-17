@@ -13,7 +13,6 @@ app.post("/api/getvideo", async (req, res) => {
   if (!videoUrl) return res.status(400).json({ error: "No URL provided" });
 
   try {
-    // Get direct download URL for the best quality
     const downloadUrl = await ytdlp.getDownloadUrl(videoUrl, { format: "best" });
     res.json({ downloadUrl });
   } catch (error) {
@@ -22,11 +21,9 @@ app.post("/api/getvideo", async (req, res) => {
   }
 });
 
-// Optional root route to test server
 app.get("/", (req, res) => {
   res.send("✅ VidFetch backend is running! Use POST /api/getvideo");
 });
 
-// Dynamic port for Render
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
