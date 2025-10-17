@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import { exec } from "child_process";
+import { execFile } from "child_process";
 
 const app = express();
 app.use(cors());
@@ -10,8 +10,7 @@ app.post("/api/getvideo", (req, res) => {
   const videoUrl = req.body.url;
   if (!videoUrl) return res.status(400).json({ error: "No URL provided" });
 
-  // Call yt-dlp via Python to avoid PATH issues
-  exec(`python3 -m yt_dlp -f best -g ${videoUrl}`, (error, stdout, stderr) => {
+  execFile("yt-dlp", ["-f", "best", "-g", videoUrl], (error, stdout, stderr) => {
     if (error) {
       console.error("yt-dlp error:", stderr);
       return res.status(500).json({ error: "Failed to get video link" });
