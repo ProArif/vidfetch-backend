@@ -1,36 +1,26 @@
-import express from 'express';
-import cors from 'cors';
-import { YTDlpWrap } from 'yt-dlp-wrap';
+import express from "express";
+import cors from "cors";
+import { exec } from "child_process";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-const ytdlp = new YTDlpWrap(); // no manual chmod needed
+app.post("/api/getvideo", (req, res) => {
+  const { url } = req.body;
+  if (!url) return res.status(400).json({ error: "No URL provided" });
 
-app.post('/api/getvideo', async (req, res) => {
-  const videoUrl = req.body.url;
-  if (!videoUrl) return res.status(400).json({ error: 'No URL provided' });
-
-  try {
-    // Get video info JSON
-    const info = await ytdlp.execPromise(videoUrl, ['-j']);
-    const json = JSON.parse(info);
-
-    if (!json?.url) {
-      return res.status(500).json({ error: 'Could not retrieve video URL' });
+  // Use yt-dlp directly via Python
+  exec(`yt-dlp -f best -g "${url}"`, (err, stdout, stderr) => {
+    if (err) {
+      console.error(stderr || err);
+      return res.status(500).json({ error: "Failed to get video link" });
     }
-
-    res.json({ downloadUrl: json.url });
-  } catch (error) {
-    console.error('yt-dlp error:', error);
-    res.status(500).json({ error: 'Failed to get video link' });
-  }
+    res.json({ downloadUrl: stdout.trim() });
+  });
 });
 
-app.get('/', (req, res) => {
-  res.send('✅ VidFetch backend is running! Use POST /api/getvideo');
-});
+app.get("/", (req, res) => res.send("✅ Server running"));
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
