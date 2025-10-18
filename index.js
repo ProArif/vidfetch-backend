@@ -11,7 +11,7 @@ app.post('/api/getvideo', async (req, res) => {
   if (!videoUrl) return res.status(400).json({ error: 'No URL provided' });
 
   try {
-    const downloadUrl = await ytdlp.getDownloadUrl(videoUrl, { format: 'best' });
+    const downloadUrl = await ytdlp(videoUrl, { format: 'best' });
     res.json({ downloadUrl });
   } catch (error) {
     console.error('yt-dlp error:', error);
